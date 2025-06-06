@@ -120,8 +120,8 @@ def hand_tracking():
 def robot_sim():
     
     env = suite.make(
-        env_name="Stack", # replace with other tasks "Stack" and "Door"
-        robots="Panda",  # try with other robots like "Sawyer" and "Jaco"
+        env_name="Stack",
+        robots="Panda",
         has_renderer=True,
         has_offscreen_renderer=False,
         use_camera_obs=False,
