@@ -14,11 +14,13 @@ def calibrate_index(circle_center, radius, index_tip, screen_width, screen_heigh
         return False
 
 
-def get_params(index_tip, thumb_tip):
+def get_params(index_tip, thumb_tip, middle_tip):
 
     index_point = np.array([index_tip.x, index_tip.y, index_tip.z])
     thumb_point = np.array([thumb_tip.x, thumb_tip.y, thumb_tip.z])
+    middle_point = np.array([middle_tip.x, middle_tip.y, middle_tip.z])
 
     grip_dist = np.linalg.norm(index_point - thumb_point)
+    depth_dist = np.linalg.norm(middle_point - index_point)
 
-    return [index_point, thumb_point, grip_dist]
+    return [index_point, thumb_point, grip_dist, depth_dist]

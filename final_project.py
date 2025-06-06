@@ -13,7 +13,6 @@ from mediapipe.python.solutions.hands_connections import HAND_CONNECTIONS
 
 from hand_tracking import calibrate_index, get_params
 from hand_policy import HandTrackingWithPID
-from robosuite.utils.placement_samplers import UniformRandomSampler
 
 
 command_queue = queue.Queue()
@@ -36,7 +35,6 @@ def hand_tracking():
         mp_hands.HandLandmark.MIDDLE_FINGER_MCP,
         mp_hands.HandLandmark.MIDDLE_FINGER_PIP,
         mp_hands.HandLandmark.MIDDLE_FINGER_DIP,
-        mp_hands.HandLandmark.MIDDLE_FINGER_TIP,
         mp_hands.HandLandmark.RING_FINGER_MCP,
         mp_hands.HandLandmark.RING_FINGER_PIP,
         mp_hands.HandLandmark.RING_FINGER_DIP,
@@ -48,14 +46,14 @@ def hand_tracking():
     ]
 
     for landmark in excluded_landmarks:
-        # we change the way the excluded landmarks are drawn
+        # change the way the landmarks are drawn
         custom_style[landmark] = mp_drawing.DrawingSpec(color=(255,255,0), thickness=0) 
-        # we remove all connections which contain these landmarks
         custom_connections = [connection_tuple for connection_tuple in custom_connections 
                                 if landmark.value not in connection_tuple]
         
     custom_style[mp_hands.HandLandmark.INDEX_FINGER_TIP] = mp_drawing.DrawingSpec(color=(0,0,255), thickness=5)
     custom_style[mp_hands.HandLandmark.THUMB_TIP] = mp_drawing.DrawingSpec(color=(0,0,255), thickness=5)
+    custom_style[mp_hands.HandLandmark.MIDDLE_FINGER_TIP] = mp_drawing.DrawingSpec(color=(0,0,255), thickness=5)
 
 
     with mp_hands.Hands(
@@ -103,24 +101,13 @@ def hand_tracking():
 
                         thumb_rhs = hand_landmarks.landmark[4]
                         index_rhs = hand_landmarks.landmark[8]
+                        middle_rhs = hand_landmarks.landmark[12]
 
-                        params_rhs = get_params(index_rhs, thumb_rhs)
+                        params_rhs = get_params(index_rhs, thumb_rhs, middle_rhs)
                         params_rhs.append(calibrated)
                         params_rhs.append(False)
                         # print(params_rhs)
                         command_queue.put(params_rhs)
-
-                    else:
-                        index_lhs = hand_landmarks.landmark[8]
-                        thumb_lhs = hand_landmarks.landmark[4]
-
-                        params_lhs = get_params(index_lhs, thumb_lhs)
-                        params_lhs.append(False)
-                        params_lhs.append(True)
-                        command_queue.put(params_lhs)
-
-
-                    # print(f"Thumb tip: {hand_landmarks.landmark[4]}")
 
 
             cv2.imshow("Hand Tracking", cv2.flip(image, 1))
@@ -133,7 +120,7 @@ def hand_tracking():
 def robot_sim():
     
     env = suite.make(
-        env_name="Lift", # replace with other tasks "Stack" and "Door"
+        env_name="Stack", # replace with other tasks "Stack" and "Door"
         robots="Panda",  # try with other robots like "Sawyer" and "Jaco"
         has_renderer=True,
         has_offscreen_renderer=False,
@@ -158,7 +145,7 @@ def robot_sim():
                 params = None
 
             action = policy.get_action(params, obs['robot0_eef_pos'])
-            obs, reward, _ = env.step(action)  # take action in the environment
+            obs, reward, done, info = env.step(action)  # take action in the environment
             env.render()  # render on display
             if reward == 1.0:
                 success_rate += 1
