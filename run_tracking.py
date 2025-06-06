@@ -10,6 +10,7 @@ import mediapipe.python.solutions.hands as mp_hands
 import mediapipe.python.solutions.drawing_utils as mp_drawing
 import mediapipe.python.solutions.drawing_styles as mp_drawing_styles
 from mediapipe.python.solutions.hands_connections import HAND_CONNECTIONS
+from robosuite.utils.placement_samplers import UniformRandomSampler
 
 from hand_tracking import calibrate_index, get_params
 from hand_policy import HandTrackingWithPID
@@ -74,7 +75,7 @@ def hand_tracking():
             image = cv2.resize(frame, (1000, 750))
             height, width, _ = image.shape
 
-            circle_center = (int(width * 0.3), int(height*0.25))
+            circle_center = (int(width * 0.4), int(height*0.25))
             radius = 20
             color = (0, 255, 0)
             thickness = -1
@@ -118,7 +119,37 @@ def hand_tracking():
 
 
 def robot_sim():
-    
+
+    ######## UNCOMMENT TO RUN SQUARE NUT TASK ########
+    # placement_initializer = UniformRandomSampler(
+    # name="FixedOriSampler",
+    # mujoco_objects=None,            
+    # x_range=[-0.115, -0.11],       
+    # y_range=[0.05, 0.225],
+    # rotation=np.pi,
+    # rotation_axis="z",
+    # ensure_object_boundary_in_range=False,
+    # ensure_valid_placement=False,
+    # reference_pos=(0,0,0.82),
+    # z_offset=0.02,
+    # )
+
+    # # create environment instance
+    # env = suite.make(
+    #     env_name="NutAssemblySquare", 
+    #     robots="Panda", 
+    #     has_renderer=True,
+    #     has_offscreen_renderer=False,
+    #     use_camera_obs=False,
+    #     placement_initializer=placement_initializer,
+    #     ignore_done=True,
+    #     horizon=6000,
+    #     control_freq=20
+    # )
+    ##################################################
+
+
+    ######## COMMENT OUT TO RUN SQUARE NUT TASK #########
     env = suite.make(
         env_name="Stack",
         robots="Panda",
@@ -128,6 +159,7 @@ def robot_sim():
         horizon=6000,
         control_freq=20
     )
+    #####################################################
 
     success_rate = 0
     print("Waiting to calibrate - place right index finger in green circle")

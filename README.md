@@ -40,8 +40,8 @@ The default environment that is loaded is the 'Stack' environment using Robosuit
 
 ```python
 env = suite.make(
-    env_name="Stack", # replace with other tasks "Stack" and "Door"
-    robots="Panda",  # try with other robots like "Sawyer" and "Jaco"
+    env_name="Stack",
+    robots="Panda",
     has_renderer=True,
     has_offscreen_renderer=False,
     use_camera_obs=False,
@@ -50,12 +50,21 @@ env = suite.make(
 )
 ```
 
-For a full list of environments and robots supported by Robosuite, refer to their <a href="https://robosuite.ai/docs/overview.html">documentation</a>.
+The SquareNut Assembly task is commented out in `run_tracking.py` for your convenience. For a full list of environments and robots supported by Robosuite, refer to their <a href="https://robosuite.ai/docs/overview.html">documentation</a>.
 
 
 #### Tracking Parameters 
 
-Using Google MediaPipe's Hand Tracking model, the program tracks the location of your right hand thumb, index finger, and middle finger. The position of the tip of your index finger is used to move the end effector of the robot. The distance between the tip of your index finger and the tip of your thumb is used to determine whether the gripped should be open or closed. Finally, the distance between the tip of your index finger and the tip of your middle finger is used to determine the current 'movement mode' of the system: if your middle finger and index finger are close together, the movement mode will be set to 'depth', otherwise it will be set to 'lateral'. There are two movement modes, 'depth' or 'lateral'. In the 'lateral' mode, the x-direction movement of your index finger will be mirrored in side-to-side/horizontal movement of the robot's end effector, and y-direction movement will be mirrored with up-down/vertical movement.  In 'depth' mode, horizontal movement of your index finger will result in forward/back movement of the end effector (right for forward movement and left for backward movement). Vertical movement of your finger will have no effect on the robot's end effector.
+Using Google MediaPipe's Hand Tracking model, the program tracks the location of your right hand thumb, index finger, and middle finger. 
+- The position of the tip of your index finger is used to move the end effector of the robot. 
+- The distance between the tip of your index finger and the tip of your thumb is used to determine whether the gripped should be open or closed. 
+- Finally, the distance between the tip of your index finger and the tip of your middle finger is used to determine the current 'movement mode' of the system.
+    - If your middle finger and index finger are close together, the movement mode will be set to 'depth', otherwise it will be set to 'lateral'. 
+    
+There are two movement modes, 'depth' or 'lateral'. 
+- In the 'lateral' mode, the x-direction movement of your index finger will be mirrored in side-to-side/horizontal movement of the robot's end effector, and y-direction movement will be mirrored with up-down/vertical movement.  
+- In 'depth' mode, horizontal movement of your index finger will result in forward/back movement of the end effector (right for forward movement and left for backward movement). 
+    - Vertical movement of your finger will have no effect on the robot's end effector.
 
 The goal of the default environment is to pick up the red cube and place it on top of the green cube. Currently, this program does not support rotation of the end effector, so you may need to be creative to get the program to complete the task! The default environment will run 5 iterations of the task, moving on to the next iteration after successful stacking or after a timeout period of 5 minutes.
 
